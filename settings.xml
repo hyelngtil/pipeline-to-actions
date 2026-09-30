@@ -1,0 +1,41 @@
+<!-- ======================================================================= -->
+<!-- settings.xml — Maven Settings for GitHub Packages Authentication         -->
+<!-- ======================================================================= -->
+<!-- This file tells Maven HOW TO AUTHENTICATE when downloading from or       -->
+<!-- publishing to GitHub Packages.                                           -->
+<!--                                                                          -->
+<!-- COMPARISON WITH ORIGINAL PROJECT:                                        -->
+<!-- In the original CodePipeline project, settings.xml was configured to     -->
+<!-- authenticate with AWS CodeArtifact using a token generated via:          -->
+<!--   aws codeartifact get-authorization-token                               -->
+<!--                                                                          -->
+<!-- Here, GitHub Packages authentication uses the GITHUB_TOKEN environment   -->
+<!-- variable, which is AUTOMATICALLY provided by GitHub Actions — no manual  -->
+<!-- token generation needed!                                                 -->
+<!--                                                                          -->
+<!-- For LOCAL development (running 'mvn deploy' from your machine), you      -->
+<!-- would need to create a Personal Access Token (PAT) with 'read:packages'  -->
+<!-- and 'write:packages' scopes, and set it as GITHUB_TOKEN env var.         -->
+<!-- ======================================================================= -->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+          https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <servers>
+        <!-- This <server> block provides credentials for the repository    -->
+        <!-- defined in pom.xml's <distributionManagement> section.         -->
+        <!-- The 'id' here MUST exactly match the <repository><id> in pom. -->
+        <server>
+            <id>github</id>
+            <!-- USERNAME: your GitHub username                              -->
+            <!-- PASSWORD: the GITHUB_TOKEN environment variable             -->
+            <!-- In GitHub Actions, this is injected automatically.          -->
+            <!-- Locally, you'd export GITHUB_TOKEN=your_personal_access_token -->
+            <username>${env.GITHUB_ACTOR}</username>
+            <password>${env.GITHUB_TOKEN}</password>
+        </server>
+    </servers>
+
+</settings>
+

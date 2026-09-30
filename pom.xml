@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ======================================================================= -->
+<!-- pom.xml — Maven Project Object Model                                     -->
+<!-- ======================================================================= -->
+<!-- This is the heart of a Maven project. It defines:                        -->
+<!--   1. Project identity (groupId, artifactId, version)                     -->
+<!--   2. Build settings (Java version, packaging type)                       -->
+<!--   3. Dependencies (external libraries the project needs)                 -->
+<!--   4. Distribution management (where to publish built artifacts)          -->
+<!--                                                                          -->
+<!-- COMPARISON WITH ORIGINAL PROJECT:                                        -->
+<!-- The original CodePipeline project used AWS CodeArtifact as its private    -->
+<!-- Maven repository. Here, we use GitHub Packages instead — keeping the      -->
+<!-- entire CI/CD ecosystem within GitHub.                                     -->
+<!-- ======================================================================= -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- POM model version — always 4.0.0 for Maven 2/3 projects -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ================================================================= -->
+    <!-- PROJECT COORDINATES                                                -->
+    <!-- ================================================================= -->
+    <!-- These three fields uniquely identify this project in any Maven     -->
+    <!-- repository (like a package's "address"):                           -->
+    <!--   groupId    = organization/company (reverse domain notation)      -->
+    <!--   artifactId = the actual project/app name                         -->
+    <!--   version    = release version (SNAPSHOT = under development)      -->
+    <!-- ================================================================= -->
+    <groupId>com.devops.pipeline</groupId>
+    <artifactId>pipeline-actions-webapp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- 'war' packaging tells Maven to produce a Web Application Archive  -->
+    <!-- (.war file) instead of a regular .jar. WAR files are deployable   -->
+    <!-- to servlet containers like Apache Tomcat.                         -->
+    <packaging>war</packaging>
+
+    <!-- Human-readable project metadata -->
+    <name>Pipeline to Actions Web App</name>
+    <description>
+        A Java web application demonstrating CI/CD with GitHub Actions
+        deploying to AWS ECS Fargate. Mirrors the architecture of an
+        AWS CodePipeline project but uses GitHub-native tooling.
+    </description>
+
+    <!-- ================================================================= -->
+    <!-- BUILD PROPERTIES                                                   -->
+    <!-- ================================================================= -->
+    <!-- Properties act as reusable variables referenced throughout the POM -->
+    <!-- using ${property.name} syntax.                                    -->
+    <!-- ================================================================= -->
+    <properties>
+        <!-- Compile Java source code targeting Java 8 (1.8) syntax.       -->
+        <!-- This matches the original project which used Corretto 8.      -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <!-- Ensure all source files are read as UTF-8 to prevent          -->
+        <!-- encoding issues across different OSes and locales.            -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- ================================================================= -->
+    <!-- DISTRIBUTION MANAGEMENT — WHERE TO PUBLISH BUILT ARTIFACTS         -->
+    <!-- ================================================================= -->
+    <!-- Tells Maven WHERE to upload the compiled .war when you run         -->
+    <!-- 'mvn deploy'.                                                     -->
+    <!--                                                                    -->
+    <!-- ORIGINAL PROJECT: Used an AWS CodeArtifact repository URL.         -->
+    <!-- THIS PROJECT:     Uses GitHub Packages Maven registry.             -->
+    <!--                                                                    -->
+    <!-- *** IMPORTANT: Replace OWNER with your GitHub username ***         -->
+    <!-- Authentication is handled by GITHUB_TOKEN (auto-provided by       -->
+    <!-- GitHub Actions) — no manual token creation needed.                -->
+    <!-- ================================================================= -->
+    <distributionManagement>
+        <repository>
+            <!-- This 'id' MUST match the <server> id in settings.xml      -->
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <!-- FORMAT: https://maven.pkg.github.com/OWNER/REPOSITORY     -->
+            <url>https://maven.pkg.github.com/hyelngtil/pipeline-to-actions</url>
+        </repository>
+    </distributionManagement>
+    <!-- ================================================================= -->
+    <!-- DEPENDENCIES — EXTERNAL LIBRARIES THIS PROJECT NEEDS               -->
+    <!-- ================================================================= -->
+    <!-- Maven automatically downloads these from Maven Central (or GitHub  -->
+    <!-- Packages if configured). Each dependency uses groupId:artifactId:  -->
+    <!-- version coordinates to identify it uniquely.                      -->
+    <!-- ================================================================= -->
+    <dependencies>
+        <!-- Java Servlet API 3.1 — core interfaces for building web       -->
+        <!-- applications (HttpServlet, HttpServletRequest, etc.).          -->
+        <!-- Scope 'provided' = Tomcat already includes this at runtime,   -->
+        <!-- so we only need it at compile time. It won't go into the WAR. -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JUnit 4 — testing framework for unit tests.                   -->
+        <!-- Scope 'test' = only available during 'mvn test', not included -->
+        <!-- in the final WAR file.                                        -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- ================================================================= -->
+    <!-- BUILD CONFIGURATION                                                -->
+    <!-- ================================================================= -->
+    <build>
+        <!-- finalName controls the output WAR filename.                    -->
+        <!-- Without this: pipeline-actions-webapp-1.0-SNAPSHOT.war         -->
+        <!-- With this:    pipeline-actions-webapp.war                      -->
+        <!-- A clean name makes it easier to reference in the Dockerfile.  -->
+        <finalName>pipeline-actions-webapp</finalName>
+
+        <plugins>
+            <!-- Maven WAR Plugin — handles WAR file packaging.             -->
+            <!-- failOnMissingWebXml=false allows building even if web.xml  -->
+            <!-- is missing (useful for annotation-based servlet config).   -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+

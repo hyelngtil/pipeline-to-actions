@@ -1,0 +1,67 @@
+# =============================================================================
+# .gitignore — Pipeline to Actions Project
+# =============================================================================
+# This file tells Git which files and directories to EXCLUDE from version
+# control. This prevents build artifacts, IDE configs, sensitive credentials,
+# and temporary files from being committed to the repository.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Java / Maven Build Outputs
+# ---------------------------------------------------------------------------
+# The 'target/' directory is where Maven compiles Java source code and
+# packages the final WAR file. It is fully regenerated on every build,
+# so it should never be committed to Git.
+target/
+
+# ---------------------------------------------------------------------------
+# IDE Configuration Files
+# ---------------------------------------------------------------------------
+# These directories/files are created by popular Java IDEs (IntelliJ,
+# Eclipse, VS Code). They contain user-specific settings that differ
+# between developers and should not be shared.
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+.vscode/
+
+# ---------------------------------------------------------------------------
+# Operating System Files
+# ---------------------------------------------------------------------------
+# macOS creates .DS_Store in every directory. Windows creates Thumbs.db.
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Terraform State & Working Files
+# ---------------------------------------------------------------------------
+# Terraform state files contain sensitive info (resource IDs, IPs, etc.).
+# State should be stored remotely in S3, NOT committed to Git.
+# .terraform/ contains downloaded provider plugins (large binaries).
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfplan
+terraform/tfplan
+
+# ---------------------------------------------------------------------------
+# Environment & Credentials
+# ---------------------------------------------------------------------------
+# NEVER commit credentials, tokens, or environment-specific config to Git.
+# These should be managed through GitHub Secrets or local env variables.
+.env
+.env.*
+*.pem
+*.key
+credentials
+
+# ---------------------------------
+# Other files & directories
+# ---------------------------------
+legendary-aws-devops-codepipeline-updated.md
+.agents
